@@ -1,6 +1,5 @@
 import requests
 import os
-import yadisk
 import json
 
 def get_vk_photos(user_id, access_token, folder_path):
@@ -64,11 +63,9 @@ def upload_to_yandex_disk(folder_path, yandex_folder_url, yandex_token):
         photo_path = os.path.join(folder_path, photo)
         headers = {"Authorization": f"OAuth {yandex_token}"}
 
-        # Создаем ресурс для загрузки на Яндекс.Диск
-        response = requests.get(
-            f"https://cloud-api.yandex.net/v1/disk/resources/upload?path=/vk_yandex/{photo}&overwrite=true",
-            headers=headers
-        )
+        # Получаем URL для загрузки файла на Яндекс.Диск
+        upload_url = f"https://cloud-api.yandex.net/v1/disk/resources/upload?path=/vk_yandex/{photo}&overwrite=true"
+        response = requests.get(upload_url, headers=headers)
 
         if response.status_code == 200:
             upload_url = response.json()['href']
@@ -85,15 +82,22 @@ def upload_to_yandex_disk(folder_path, yandex_folder_url, yandex_token):
         else:
             print(f"Ошибка при получении ссылки для фото {photo}")
 
-    # Путь для сохранения JSON-файла в той же папке, что и фотографии
-    json_path = os.path.join(folder_path, 'uploaded_files.json')
+    # Путь для сохранения Markdown-файла в той же папке, что и фотографии
+    markdown_path = os.path.join(folder_path, 'uploaded_files.md')
 
-    # Создаем JSON-файл с информацией о загруженных файлах
-    with open(json_path, 'w') as json_file:
-        json.dump(uploaded_files, json_file)
+    # Создаем Markdown-файл с информацией о загруженных файлах
+    with open(markdown_path, 'w') as markdown_file:
+        markdown_file.write("# Загруженные файлы\n\n")
+
+        for file_info in uploaded_files:
+            file_name = file_info["file_name"]
+            file_size = file_info["size"]
+
+            markdown_file.write(f"**Файл:** {file_name}\n")
+            markdown_file.write(f"**Размер:** {file_size} байт\n\n")
 
 
-folder_path = r'M:\Programs\Python_Git\vk_yandex\phot'
+folder_path = 'phot'
 yandex_folder_url = 'https://disk.yandex.lt/client/disk'
 yandex_token = input("Введите токен Яндекс.Диска: ")
 
