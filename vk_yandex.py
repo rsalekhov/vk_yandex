@@ -48,7 +48,7 @@ def download_photos(photos, folder_path):
 
 
 # Путь к папке, куда сохранить фотографии
-folder_path = r'M:\Programs\Python_Git\vk_yandex\phot'
+folder_path = 'phot'
 
 user_id = input("Введите ID пользователя VK: ")  # ID пользователя VK
 token = input("Введите токен доступа VK API: ")  # Токен доступа VK API
